@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <!--Revision 0: The code is modified from Kaijie Zhou: https://gist.github.com/kaijiezhou/bac86244017c850034fe/-->
-<!--            colors: http://stackoverflow.com/questions/21208031/how-to-customize-the-color-scale-in-a-d3-line-chart-->
 <html>
 <head>
     <title>Titanic</title>
@@ -32,20 +31,29 @@
             fill: black;
             font-weight:bold;
         }
-
+		label {
+			display: inline-block;
+			width: 400px;
+			margin-left: 3em;
+		}
     </style>
 </head>
 <body>
 <h1 style="margin-left:1em;">Titanic Victims</h1>
 <p style="margin-left:3em;">
-A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</sup></small> and passenger class on the 1911 voyage of the ship Titanic which ended in tragedy and the loss of human life.
+A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</sup></small> and passenger class on the 1911
+voyage of the ship Titanic which ended in tragedy and the loss of human life. A majority of deaths occurred in males and
+passengers in 3rd class.
 <br/>
 <br/>
 </p>
 <svg class = "svg">
 </svg>
+<br/>
+<label><input type="checkbox"> Sort by Man, Woman, Child</label>
 <p style="margin-left:3em;">
-<small>1: The total number of passengers was approximately 1,317. The graph above is limited to a set of 714 passengers (54%) for which age information was available, and there is a possibility that the data set is skewed.</small>
+<small>1: The total number of passengers was approximately 1,317. The graph above is limited to a set of 714 passengers (54%)
+for which age information was available, and there is a possibility that the data set is skewed.</small>
 <br/>
 <small>2: In this graph, a passenger was considered a child if under the age of 16.</small>
 <br/>
@@ -58,7 +66,9 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
             bar_height = 20,
             height = bar_height * 20,
             var_range_max = 220,
-            y_buffer = 0;
+            y_buffer = 0,
+            sorter = 'Pclass',
+            sortSpacer = 20;
     var rightOffset = width_left + labelArea;
     var lCol = "Survivors";
     var rCol = "Victims";
@@ -67,19 +77,31 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
     var xTo = d3.scale.linear().domain([0,var_range_max])
             .range([0, width_right]);
     var y = d3.scale.ordinal()
-            .rangeBands([20, height-70]);
+            .rangeBands([20, height-70]); //used 70 pixels for a buffer for spacing.
 	var cust_color = d3.scale.ordinal()
 	  .domain(["Man", "Woman", "Child"])
 	  .range(["steelblue", "indianred" , "#DAA520"]);
 
     function render(data) {
 
+		//default sorting is grouped by Pclass. A checkbox is used to change sorter value
         data.sort(function(a,b) {
-    		if (a.Pclass!=b.Pclass) return b.Pclass - a.Pclass;
-    		if (a.Man_Woman_Child == b.Man_Woman_Child) return 0;
-    		if (a.Man_Woman_Child == "Man") return -1;
-    		if (a.Man_Woman_Child == "Woman" && b.Man_Woman_Child == "Child") return -1;
-    		else return 1;
+        	if(sorter == "Man_Woman_Child"){
+
+				if (a.Man_Woman_Child == b.Man_Woman_Child) return b.Pclass - a.Pclass;
+				if (a.Man_Woman_Child == b.Man_Woman_Child) return 0;
+				if (a.Man_Woman_Child == "Man") return -1;
+				if (a.Man_Woman_Child == "Woman" && b.Man_Woman_Child == "Child") return -1;
+				else return 1;
+			}
+			else{
+
+				if (a.Pclass!=b.Pclass) return b.Pclass - a.Pclass;
+				if (a.Man_Woman_Child == b.Man_Woman_Child) return 0;
+				if (a.Man_Woman_Child == "Man") return -1;
+				if (a.Man_Woman_Child == "Woman" && b.Man_Woman_Child == "Child") return -1;
+				else return 1;
+			}
          });
 
         var chart = d3.select("svg")
@@ -90,9 +112,16 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
         y.domain(data.map(function (d) {
             return d.Demographic;
         }));
+
+        //a spacer is introduced to the y coordinate when sorting by Pclass (zeroed out otherwise)
         var yPosByIndex = function (d) {
-            return y(d.Demographic) + 20*(4-d.Pclass);
+            return y(d.Demographic) + sortSpacer*(4-d.Pclass);
         };
+
+
+		//the following sections draw the horizontal bars and labels on each y band
+
+		//rect.lefts will have backwards x coordinates starting at the width of the left side
         chart.selectAll("rect.left")
                 .data(data)
                 .enter().append("rect")
@@ -113,7 +142,7 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
                     return width_left - xFrom(d[lCol])-25;
                 })
                 .attr("y", function (d) {
-                    return y(d.Demographic) + y.rangeBand() / 2 + 20*(4-d.Pclass);
+                    return y(d.Demographic) + y.rangeBand() / 2 + sortSpacer*(4-d.Pclass);
                 })
                 .attr("dx", "20")
                 .attr("dy", ".36em")
@@ -125,12 +154,13 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
                 .enter().append("text")
                 .attr("x", (labelArea / 2) + width_left)
                 .attr("y", function (d) {
-                    return y(d.Demographic) + y.rangeBand() / 2 + 20*(4-d.Pclass);
+                    return y(d.Demographic) + y.rangeBand() / 2 + sortSpacer*(4-d.Pclass);
                 })
                 .attr("dy", ".20em")
                 .attr("text-anchor", "middle")
                 .attr('class', 'name')
                 .text(function(d){return d.Demographic;});
+        //rect.rights will have x coordinates starting at the offset (after left side & labels)
         chart.selectAll("rect.right")
                 .data(data)
                 .enter().append("rect")
@@ -149,17 +179,38 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
                     return xTo(d[rCol]) + rightOffset+10;
                 })
                 .attr("y", function (d) {
-                    return y(d.Demographic) + (y.rangeBand() / 2) + 20*(4-d.Pclass);
+                    return y(d.Demographic) + (y.rangeBand() / 2) + sortSpacer*(4-d.Pclass);
                 })
                 .attr("dx", -5)
                 .attr("dy", ".36em")
                 .attr("text-anchor", "start")
                 .attr('class', 'score')
                 .text(function(d){return d[rCol];});
-        chart.append("text").attr("x",width_left-10).attr("y", 15).attr("class","title").text("No. of Survivors (290)").attr("text-anchor", "end");
-        chart.append("text").attr("x",10+rightOffset).attr("y", 15).attr("class","title").text("No. of Fatalities (424)").attr("text-anchor", "start");
-        chart.append("text").attr("x",width_left+labelArea/2).attr("y", 15).attr("class","title").text("Demographic").attr("text-anchor", "middle");
+
+        chart.append("text").attr("x",width_left-10).attr("y", 15).attr("class","title").text("No. of Survivors (290)")
+        	.attr("text-anchor", "end");
+        chart.append("text").attr("x",10+rightOffset).attr("y", 15).attr("class","title").text("No. of Fatalities (424)")
+        	.attr("text-anchor", "start");
+        chart.append("text").attr("x",width_left+labelArea/2).attr("y", 15).attr("class","title").text("Demographic")
+        	.attr("text-anchor", "middle");
+
+		d3.select("input").on("change", change);
+
+		//when the checkbox is checked, then change the sorting/placement parameters and re-render
+		function change() {
+			d3.selectAll("svg > *").remove();
+			if (this.checked){
+				sortSpacer = 0;
+				sorter = "Man_Woman_Child";
+			}
+			else{
+				sortSpacer = 20;
+				sorter = "Pclass";
+			}
+			render(data);
+		}
     }
+
     function type(d) {
         d["Victims"] = +d["Victims"];
         d["Survivors"] = +d["Survivors"];

@@ -34,6 +34,7 @@ The same scale was used for both the left side and the right side, since they ar
 
 ### Third Iteration
 1. Refine wording - use the word 'Victims' in title.  Include the words 'passenger class' in the description, to provide context for 1st class, etc.
+2. Include checkbox for sorting by Man, Woman Child rather than Pclass.
 
 
 ## Feedback
@@ -82,3 +83,4 @@ Respondent C:
 * colors: http://stackoverflow.com/questions/21208031/how-to-customize-the-color-scale-in-a-d3-line-chart
 * sorting: http://stackoverflow.com/questions/32846062/custom-keys-sorting-in-rolled-data-d3-js
 * RMS Titanic: http://en.wikipedia.org/wiki/RMS_Titanic
+* resorting: http://bl.ocks.org/mbostock/3885705
