@@ -36,18 +36,13 @@
     </style>
 </head>
 <body>
-<h1 style="margin-left:1em;">Titanic Fatalities</h1>
+<h1 style="margin-left:1em;">Titanic Mortality</h1>
 <p style="margin-left:3em;">
-A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</sup></small> on the 1911 voyage of the ship Titanic which ended in tragedy and the loss of human life.
+The voyage of the Titanic ended in tragedy and over 1500 people died. The passenger carrier had accommodations for people of various economic status. During the evacuation, women and children were given preference for rescue.
 <br/>
 <br/>
-</p>
-<svg class = "svg">
-</svg>
-<p style="margin-left:3em;">
-<small>1: The total number of passengers was approximately 1,317. The graph above is limited to a set of 714 passengers (54%) for which age information was available, and there is a possibility that the data set is skewed.</small>
+The graph below is based on a sample of 714 passengers for which passenger information including age was available. The total number of passengers was approximately 1,317. The sample here represents 54% of the passenger population, and excludes crew members.
 <br/>
-<small>2: In this graph, a passenger was considered a child if under the age of 16.</small>
 <br/>
 </p>
 <script type="text/javascript">
@@ -67,7 +62,7 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
     var xTo = d3.scale.linear().domain([0,var_range_max])
             .range([0, width_right]);
     var y = d3.scale.ordinal()
-            .rangeBands([20, height-70]);
+            .rangeBands([20, height-100]);
 	var cust_color = d3.scale.ordinal()
 	  .domain(["Man", "Woman", "Child"])
 	  .range(["steelblue", "indianred" , "#DAA520"]);
@@ -82,7 +77,8 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
     		else return 1;
          });
 
-        var chart = d3.select("svg")
+        var chart = d3.select("body")
+                .append('svg')
                 .attr('class', 'chart')
                 .attr('width', labelArea + width_left + width_right)
                 .attr('height', height);
@@ -156,8 +152,8 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
                 .attr("text-anchor", "start")
                 .attr('class', 'score')
                 .text(function(d){return d[rCol];});
-        chart.append("text").attr("x",width_left-10).attr("y", 15).attr("class","title").text("No. of Survivors (290)").attr("text-anchor", "end");
-        chart.append("text").attr("x",10+rightOffset).attr("y", 15).attr("class","title").text("No. of Fatalities (424)").attr("text-anchor", "start");
+        chart.append("text").attr("x",width_left-10).attr("y", 15).attr("class","title").text("No. of Survivors").attr("text-anchor", "end");
+        chart.append("text").attr("x",10+rightOffset).attr("y", 15).attr("class","title").text("No. of Victims").attr("text-anchor", "start");
         chart.append("text").attr("x",width_left+labelArea/2).attr("y", 15).attr("class","title").text("Demographic").attr("text-anchor", "middle");
     }
     function type(d) {
@@ -166,7 +162,7 @@ A summary of victims<small><sup>1</sup></small> per demographic<small><sup>2</su
         d["Pclass"]= +d["Pclass"];
         return d;
     }
-    d3.csv("https://gist.githubusercontent.com/katcravo/6c23b55ad66a1494465d341cecc25b53/raw/0c2de047d508fc4ce4af907c1fdef8d80164c338/titanic_mortality.csv", type, render);
+    d3.csv("titanic_mortality.csv", type, render);
 </script>
 </body>
 </html>

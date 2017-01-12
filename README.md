@@ -39,7 +39,6 @@ The same scale was used for both the left side and the right side, since they ar
 
 ## Feedback
 ### Initial Graph
-https://bl.ocks.org/katcravo/raw/693a5c8096f21b0aa3326b6a531a5bd9/
 
 Respondent A:  
 1. Concerned about a biased data set (preventing objectivity).  
@@ -61,7 +60,6 @@ Respondent C:
     *Change 3- include totals in headings  
 
 ### Second Graph
-https://bl.ocks.org/katcravo/raw/68edadd24ca625ac13c20715b7dd5571/  
 
 Respondent D:  
 1. First saw that mostly men died, more than women, and that a lot of children died which was awful.  
